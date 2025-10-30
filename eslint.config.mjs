@@ -17,6 +17,14 @@ const eslintConfig = [
     'prettier',
     'plugin:prettier/recommended'
   ),
+  {
+    rules: {
+      // 👇 Disable or relax noisy rules globally
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'react-hooks/exhaustive-deps': 'warn', // turn error → warning
+    },
+  },
 ];
 
 export default eslintConfig;

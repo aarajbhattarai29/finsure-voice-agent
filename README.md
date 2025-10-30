@@ -1,5 +1,3 @@
-
-
 Then run the app with:
 
 ```bash
@@ -38,8 +36,6 @@ export const APP_CONFIG_DEFAULTS: AppConfig = {
 };
 ```
 
-
-
 #### Environment Variables
 
 You'll also need to configure your LiveKit credentials in `.env.local` (copy `.env.example` if you don't have one):
@@ -51,5 +47,3 @@ LIVEKIT_URL=https://your-livekit-server-url
 ```
 
 These are required for the voice agent functionality to work with your LiveKit project.
-
-

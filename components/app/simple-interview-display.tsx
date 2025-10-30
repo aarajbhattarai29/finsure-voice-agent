@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { useRoomContext } from "@livekit/components-react";
+import { useEffect, useState } from 'react';
+import { useRoomContext } from '@livekit/components-react';
 
 export default function SimpleDataPrinter() {
   const [data, setData] = useState<any[]>([]);
@@ -14,19 +14,19 @@ export default function SimpleDataPrinter() {
       try {
         const jsonString = await reader.readAll();
         const parsed = JSON.parse(jsonString);
-        console.log("-------------------Simple Received:", parsed);
-        setData(prev => [...prev, parsed]);
+        console.log('-------------------Simple Received:', parsed);
+        setData((prev) => [...prev, parsed]);
       } catch (error) {
-        console.error("Error:", error);
+        console.error('Error:', error);
       }
     });
   }, [room]);
 
   return (
-    <div className="fixed right-4 top-4 w-96 max-h-96 overflow-auto bg-black/80 text-white p-4 rounded">
-      <h3 className="font-bold mb-2">Structured Data:</h3>
+    <div className="fixed top-4 right-4 max-h-96 w-96 overflow-auto rounded bg-black/80 p-4 text-white">
+      <h3 className="mb-2 font-bold">Structured Data:</h3>
       {data.map((item, i) => (
-        <pre key={i} className="text-xs mb-2 p-2 bg-gray-900 rounded overflow-auto">
+        <pre key={i} className="mb-2 overflow-auto rounded bg-gray-900 p-2 text-xs">
           {JSON.stringify(item, null, 2)}
         </pre>
       ))}

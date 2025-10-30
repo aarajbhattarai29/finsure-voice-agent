@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useRoomContext } from "@livekit/components-react"; 
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useRoomContext } from '@livekit/components-react';
 
 interface StructuredResponsePayload {
   type: string;
@@ -16,7 +16,7 @@ interface StructuredResponsePayload {
   is_structured?: boolean;
   chunk_count?: number;
   total_length?: number;
-  [key: string]: any;
+  [key: string]: string;
 }
 
 // Custom hook to handle structured data from multiple topics
@@ -24,7 +24,7 @@ export function useStructuredData() {
   const [responses, setResponses] = useState<StructuredResponsePayload[]>([]);
   const room = useRoomContext();
   const handlersRegistered = useRef<Set<string>>(new Set());
-  console.log(responses)
+  console.log(responses);
 
   useEffect(() => {
     if (!room) return;
@@ -48,12 +48,11 @@ export function useStructuredData() {
           console.log(`[${topicName}] Parsed data:`, data);
 
           // Add to responses with topic metadata
-          setResponses(prev => [...prev, { ...data, _topic: topicName }]);
-
+          setResponses((prev) => [...prev, { ...data, _topic: topicName }]);
         } catch (error) {
           console.error(`[${topicName}] Error processing data:`, error);
           if (error instanceof SyntaxError) {
-            console.error("Invalid JSON received:");
+            console.error('Invalid JSON received:');
           }
         }
       };
@@ -61,15 +60,15 @@ export function useStructuredData() {
 
     // Register handlers for multiple topics
     const topics = [
-      'llm-structured-output',    // For structured LLM responses
-      'llm-transcription',         // For plain LLM transcriptions
-      'transcription',             // For all transcriptions
-      'interview-metrics',         // For interview metrics
-      'interview-feedback',        // For interview feedback
-      'interview-turn-data',       // For turn-by-turn data
+      'llm-structured-output', // For structured LLM responses
+      'llm-transcription', // For plain LLM transcriptions
+      'transcription', // For all transcriptions
+      'interview-metrics', // For interview metrics
+      'interview-feedback', // For interview feedback
+      'interview-turn-data', // For turn-by-turn data
     ];
 
-    topics.forEach(topic => {
+    topics.forEach((topic) => {
       if (!handlersRegistered.current.has(topic)) {
         try {
           room.registerTextStreamHandler(topic, createHandler(topic));
@@ -83,13 +82,13 @@ export function useStructuredData() {
 
     // Cleanup function
     return () => {
-      console.log("Cleaning up text stream handlers");
+      console.log('Cleaning up text stream handlers');
       handlersRegistered.current.clear();
     };
   }, [room]);
 
-  return { 
-    responses, 
+  return {
+    responses,
     clearResponses: () => setResponses([]),
     latestResponse: responses[responses.length - 1],
   };
@@ -101,7 +100,6 @@ export default function StructuredDataDisplay() {
   const [filterTopic, setFilterTopic] = useState<string | null>(null);
   const { responses, clearResponses, latestResponse } = useStructuredData();
   const scrollRef = useRef<HTMLDivElement>(null);
-
   // Auto-scroll to bottom when new responses arrive
   useEffect(() => {
     if (scrollRef.current) {
@@ -122,7 +120,7 @@ export default function StructuredDataDisplay() {
     const colors: Record<string, string> = {
       'llm-structured-output': 'text-blue-400',
       'llm-transcription': 'text-green-400',
-      'transcription': 'text-purple-400',
+      transcription: 'text-purple-400',
       'interview-metrics': 'text-yellow-400',
       'interview-feedback': 'text-pink-400',
       'interview-turn-data': 'text-cyan-400',
@@ -134,7 +132,6 @@ export default function StructuredDataDisplay() {
     const colors: Record<string, string> = {
       'llm-structured-output': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       'llm-transcription': 'bg-green-500/20 text-green-400 border-green-500/30',
-      'transcription': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
       'interview-metrics': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
       'interview-feedback': 'bg-pink-500/20 text-pink-400 border-pink-500/30',
       'interview-turn-data': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
@@ -142,7 +139,7 @@ export default function StructuredDataDisplay() {
     return colors[topic] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
   };
 
-  console.log("Responses received:", responses.length);
+  console.log('Responses received:', responses.length);
 
   return (
     <AnimatePresence>
@@ -151,22 +148,22 @@ export default function StructuredDataDisplay() {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 100 }}
-          className="fixed right-8 top-8 w-96 max-h-[80vh] bg-gray-900 rounded-lg shadow-lg z-50 overflow-hidden flex flex-col"
+          className="fixed top-8 right-8 z-50 flex max-h-[80vh] w-96 flex-col overflow-hidden rounded-lg bg-gray-900 shadow-lg"
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b border-gray-700">
+          <div className="flex items-center justify-between border-b border-gray-700 p-4">
             <h2 className="text-xl font-bold text-white">Structured Data Stream</h2>
             <div className="flex gap-2">
               <button
                 onClick={clearResponses}
-                className="text-gray-400 hover:text-white text-sm px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
+                className="rounded bg-gray-800 px-2 py-1 text-sm text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
                 title="Clear all responses"
               >
                 Clear
               </button>
               <button
                 onClick={() => setIsVisible(false)}
-                className="text-gray-400 hover:text-white text-2xl leading-none hover:bg-gray-800 rounded px-2 transition-colors"
+                className="rounded px-2 text-2xl leading-none text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
                 title="Close panel"
               >
                 ×
@@ -176,29 +173,30 @@ export default function StructuredDataDisplay() {
 
           {/* Topic Filter */}
           {uniqueTopics.length > 1 && (
-            <div className="p-3 border-b border-gray-700 bg-gray-800/50">
+            <div className="border-b border-gray-700 bg-gray-800/50 p-3">
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setFilterTopic(null)}
-                  className={`text-xs px-2 py-1 rounded border transition-colors ${
+                  className={`rounded border px-2 py-1 text-xs transition-colors ${
                     filterTopic === null
-                      ? 'bg-white/20 text-white border-white/30'
-                      : 'bg-gray-700/50 text-gray-400 border-gray-600 hover:bg-gray-700'
+                      ? 'border-white/30 bg-white/20 text-white'
+                      : 'border-gray-600 bg-gray-700/50 text-gray-400 hover:bg-gray-700'
                   }`}
                 >
                   All ({responses.length})
                 </button>
-                {uniqueTopics.map(topic => (
+                {uniqueTopics.map((topic) => (
                   <button
                     key={topic}
                     onClick={() => setFilterTopic(topic === filterTopic ? null : topic)}
-                    className={`text-xs px-2 py-1 rounded border transition-colors ${
+                    className={`rounded border px-2 py-1 text-xs transition-colors ${
                       filterTopic === topic
                         ? getTopicBadgeColor(topic)
-                        : 'bg-gray-700/50 text-gray-400 border-gray-600 hover:bg-gray-700'
+                        : 'border-gray-600 bg-gray-700/50 text-gray-400 hover:bg-gray-700'
                     }`}
                   >
-                    {topic.split('-').pop()} ({responses.filter((r: any) => r._topic === topic).length})
+                    {topic.split('-').pop()} (
+                    {responses.filter((r: any) => r._topic === topic).length})
                   </button>
                 ))}
               </div>
@@ -206,20 +204,20 @@ export default function StructuredDataDisplay() {
           )}
 
           {/* Content Area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
             {filteredResponses.length === 0 ? (
-              <div className="text-gray-400 text-center py-8">
+              <div className="py-8 text-center text-gray-400">
                 {responses.length === 0 ? (
                   <>
-                    <div className="text-4xl mb-2">🎤</div>
+                    <div className="mb-2 text-4xl">🎤</div>
                     <div>Waiting for structured data...</div>
-                    <div className="text-xs mt-2">
+                    <div className="mt-2 text-xs">
                       Listening on {uniqueTopics.length || 6} topics
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="text-4xl mb-2">🔍</div>
+                    <div className="mb-2 text-4xl">🔍</div>
                     <div>No {filterTopic} messages</div>
                   </>
                 )}
@@ -230,28 +228,30 @@ export default function StructuredDataDisplay() {
                   key={`${response.session_id}-${response.timestamp}-${index}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors"
+                  className="rounded-lg border border-gray-700 bg-gray-800 p-3 transition-colors hover:border-gray-600"
                 >
                   {/* Header */}
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="mb-2 flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <span className={`font-semibold text-sm ${getTopicColor(response._topic)}`}>
+                      <span className={`text-sm font-semibold ${getTopicColor(response._topic)}`}>
                         Response #{filteredResponses.length - index}
                       </span>
                       {response._topic && (
-                        <span className={`text-xs px-2 py-0.5 rounded border ${getTopicBadgeColor(response._topic)}`}>
+                        <span
+                          className={`rounded border px-2 py-0.5 text-xs ${getTopicBadgeColor(response._topic)}`}
+                        >
                           {response._topic.split('-').pop()}
                         </span>
                       )}
                     </div>
-                    <span className="text-gray-500 text-xs">
+                    <span className="text-xs text-gray-500">
                       {new Date(response.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
 
                   {/* Type and Source */}
                   {(response.type || response.source) && (
-                    <div className="flex gap-2 mb-2 text-xs">
+                    <div className="mb-2 flex gap-2 text-xs">
                       {response.type && (
                         <span className="text-gray-400">
                           Type: <span className="text-white">{response.type}</span>
@@ -268,12 +268,11 @@ export default function StructuredDataDisplay() {
                   {/* Content - handle both string and object */}
                   {response.content && (
                     <div className="mb-2">
-                      <div className="text-gray-400 text-xs mb-1">Content:</div>
-                      <div className="text-white text-sm">
-                        {typeof response.content === 'string' 
-                          ? response.content 
-                          : JSON.stringify(response.content, null, 2)
-                        }
+                      <div className="mb-1 text-xs text-gray-400">Content:</div>
+                      <div className="text-sm text-white">
+                        {typeof response.content === 'string'
+                          ? response.content
+                          : JSON.stringify(response.content, null, 2)}
                       </div>
                     </div>
                   )}
@@ -281,26 +280,22 @@ export default function StructuredDataDisplay() {
                   {/* System Response */}
                   {response.system_response && (
                     <div className="mb-2">
-                      <div className="text-gray-400 text-xs mb-1">System Response:</div>
-                      <div className="text-white text-sm">
-                        {response.system_response}
-                      </div>
+                      <div className="mb-1 text-xs text-gray-400">System Response:</div>
+                      <div className="text-sm text-white">{response.system_response}</div>
                     </div>
                   )}
 
                   {/* Voice Instructions */}
                   {response.voice_instructions && (
                     <div className="mb-2">
-                      <div className="text-gray-400 text-xs mb-1">Voice Instructions:</div>
-                      <div className="text-green-400 text-sm">
-                        {response.voice_instructions}
-                      </div>
+                      <div className="mb-1 text-xs text-gray-400">Voice Instructions:</div>
+                      <div className="text-sm text-green-400">{response.voice_instructions}</div>
                     </div>
                   )}
 
                   {/* Metadata */}
                   {(response.chunk_count || response.total_length) && (
-                    <div className="text-xs text-gray-500 mb-2">
+                    <div className="mb-2 text-xs text-gray-500">
                       {response.chunk_count && <span>Chunks: {response.chunk_count} </span>}
                       {response.total_length && <span>Length: {response.total_length}</span>}
                     </div>
@@ -308,10 +303,10 @@ export default function StructuredDataDisplay() {
 
                   {/* Full JSON */}
                   <details className="mt-2">
-                    <summary className="text-gray-400 text-xs cursor-pointer hover:text-white">
+                    <summary className="cursor-pointer text-xs text-gray-400 hover:text-white">
                       View full JSON
                     </summary>
-                    <pre className="text-xs text-gray-300 mt-2 p-2 bg-gray-900 rounded overflow-auto max-h-48">
+                    <pre className="mt-2 max-h-48 overflow-auto rounded bg-gray-900 p-2 text-xs text-gray-300">
                       {JSON.stringify(response, null, 2)}
                     </pre>
                   </details>
@@ -322,8 +317,8 @@ export default function StructuredDataDisplay() {
 
           {/* Footer */}
           {responses.length > 0 && (
-            <div className="p-3 border-t border-gray-700 bg-gray-800">
-              <div className="text-gray-400 text-sm text-center">
+            <div className="border-t border-gray-700 bg-gray-800 p-3">
+              <div className="text-center text-sm text-gray-400">
                 Total responses: {responses.length}
                 {filterTopic && ` (${filteredResponses.length} filtered)`}
               </div>
@@ -338,14 +333,19 @@ export default function StructuredDataDisplay() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={() => setIsVisible(true)}
-          className="fixed right-8 top-8 p-3 bg-gray-900 rounded-lg shadow-lg z-50 text-white hover:bg-gray-800 transition-colors"
+          className="fixed top-8 right-8 z-50 rounded-lg bg-gray-900 p-3 text-white shadow-lg transition-colors hover:bg-gray-800"
           title="Show structured data panel"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
           </svg>
           {responses.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
               {responses.length}
             </span>
           )}
