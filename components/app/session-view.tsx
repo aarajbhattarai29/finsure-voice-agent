@@ -15,6 +15,8 @@ import { useConnectionTimeout } from '@/hooks/useConnectionTimout';
 import { useDebugMode } from '@/hooks/useDebug';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../livekit/scroll-area/scroll-area';
+// import SimpleDataPrinter from './simple-interview-display';
+import StructuredDataDisplay from './interview-data-display';
 
 const MotionBottom = motion.create('div');
 
@@ -93,6 +95,8 @@ export const SessionView = ({
   return (
     <section className="bg-background relative z-10 h-full w-full overflow-hidden" {...props}>
       {/* Chat Transcript */}
+      <StructuredDataDisplay />
+      {/* <SimpleDataPrinter /> */}
       <div
         className={cn(
           'fixed inset-0 grid grid-cols-1 grid-rows-1',
